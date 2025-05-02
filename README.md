@@ -35,3 +35,45 @@ This project is a basic Earthquake Detector built using an **Arduino Uno** and a
 
 - **Buzzer:** Positive → Pin 10, Negative → GND  
 - **LED:** Anode → Pin 11 (with 220Ω resistor), Cathode → GND
+- ## 💻 Arduino Code
+
+```cpp
+#include <MPU6050.h>
+#include <Wire.h>
+
+MPU6050 MPU;
+int GyroX, GyroY, GyroZ;
+int buzzer = 10;
+
+void setup() {
+  pinMode(11, OUTPUT); 
+  Serial.begin(9600);
+  Wire.begin();
+  MPU.initialize();
+}
+
+void loop() {
+  MPU.getRotation(&GyroX, &GyroY, &GyroZ);
+  
+  // Print only the Gyroscope data to Serial Plotter
+  Serial.print(GyroX);
+  Serial.print(" ");
+  Serial.print(GyroY);
+  Serial.print(" ");
+  Serial.println(GyroZ);
+  
+  if (GyroX < -500 || GyroX > 500 || GyroY > 500 || GyroY < -500 || GyroZ > 500 || GyroZ < -500) {
+    tone(buzzer, 2800);
+    digitalWrite(11, HIGH);
+    delay(50);
+    noTone(buzzer);
+    digitalWrite(11, LOW);
+    delay(50);
+  } else {
+    noTone(buzzer);
+    digitalWrite(11, LOW);
+  }
+  
+  delay(100); // Delay to make the graph more readable
+}
+
